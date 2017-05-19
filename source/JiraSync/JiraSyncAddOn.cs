@@ -60,6 +60,7 @@ namespace JiraSync
             String baseURL = taskContext.GetStringValue("Base Jira URL", false);
             String jql = taskContext.GetStringValue("Enter JQL", false);
 
+            // Provide default values as hints when left empty
             if (baseURL == "")
                 baseURL = "https://subdomain.atlassian.net/rest/api/2/search";
 
@@ -96,7 +97,7 @@ namespace JiraSync
                 foreach (dynamic issue in resp.issues)
                 {
                     // Find if it exists already
-                    Requirement reqObj = ToscaHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
+                    Requirement reqObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
 
                     #region Jira Parent Object
                     String jiraParent = "";
@@ -110,7 +111,7 @@ namespace JiraSync
                     if (obj.Property("parent") != null)
                     {
                         jiraParent = Convert.ToString(issue.fields.parent.key);
-                        reqParentObj = ToscaHelpers.FindRequirementByJiraProperty(requirementSet, jiraParent);
+                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, jiraParent);
                     }
                     #endregion
 
@@ -147,6 +148,21 @@ namespace JiraSync
                     }
                 }
 
+                // Reset state for those not updated
+                foreach (TCObject obj in requirementSet.Search("=>SUBPARTS:Requirement"))
+                {
+                    if (obj.GetAttributeValue(Global.JiraLastSyncedAttributeName) != startTime)
+                    {
+                        obj.SetAttibuteValue(Global.JiraSyncStateAttributeName, Global.JiraSyncStates.NotUpdated);
+                    }
+                }
+
+                // Create Virtual Folder if required
+                TCObject rsParent = requirementSet.Search("->SUPERPART").First();
+                TCVirtualFolder vf = ToscaHelpers.CreateVirtualFolder(rsParent, requirementSet.DisplayedName + " - Not Synced", "->SUPERPART=>SUBPARTS:RequirementSet[Name==\"JIR Project\"]=>SUBPARTS:Requirement[JiraSyncState!=\"" + Global.JiraSyncStates.Updated + "\"]");
+                vf.RefreshVirtualFolder(); // Force refresh to show. Otherwise, results are sometimes cached from last time it was refreshed.
+
+                // Prompt status
                 JArray issues = resp.issues;
                 taskContext.ShowMessageBox("Jira Sync", issues.Count.ToString() + " requirements have been synchronised.");
             }
@@ -245,6 +261,9 @@ namespace JiraSync
 
     }
 
+    /// <summary>
+    /// This should work on both Issue folders and individual issues
+    /// </summary>
     public class JiraRefreshDefects : TCAddOnTask
     {
         public override string Name => "Refresh Defect(s)";
