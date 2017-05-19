@@ -60,6 +60,7 @@ namespace JiraSync
             String baseURL = taskContext.GetStringValue("Base Jira URL", false);
             String jql = taskContext.GetStringValue("Enter JQL", false);
 
+            // Provide default values as hints when left empty
             if (baseURL == "")
                 baseURL = "https://subdomain.atlassian.net/rest/api/2/search";
 
@@ -260,6 +261,9 @@ namespace JiraSync
 
     }
 
+    /// <summary>
+    /// This should work on both Issue folders and individual issues
+    /// </summary>
     public class JiraRefreshDefects : TCAddOnTask
     {
         public override string Name => "Refresh Defect(s)";
