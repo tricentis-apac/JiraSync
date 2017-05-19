@@ -147,6 +147,21 @@ namespace JiraSync
                     }
                 }
 
+                // Reset state for those not updated
+                foreach (TCObject obj in requirementSet.Search("=>SUBPARTS:Requirement"))
+                {
+                    if (obj.GetAttributeValue(Global.JiraLastSyncedAttributeName) != startTime)
+                    {
+                        obj.SetAttibuteValue(Global.JiraSyncStateAttributeName, Global.JiraSyncStates.NotUpdated);
+                    }
+                }
+
+                // Create Virtual Folder if required
+                TCObject rsParent = requirementSet.Search("->SUPERPART").First();
+                TCVirtualFolder vf = ToscaHelpers.CreateVirtualFolder(rsParent, requirementSet.DisplayedName + " - Not Synced", "->SUPERPART=>SUBPARTS:RequirementSet[Name==\"JIR Project\"]=>SUBPARTS:Requirement[JiraSyncState!=\"" + Global.JiraSyncStates.Updated + "\"]");
+                vf.RefreshVirtualFolder(); // Force refresh to show. Otherwise, results are sometimes cached from last time it was refreshed.
+
+                // Prompt status
                 JArray issues = resp.issues;
                 taskContext.ShowMessageBox("Jira Sync", issues.Count.ToString() + " requirements have been synchronised.");
             }

@@ -63,21 +63,21 @@ namespace JiraSync
             return issuesDef;
         }
 
-        private TCVirtualFolder CreateVirtualFolder(TCObject obj, String virtualFolderName, String tql)
+        public static TCVirtualFolder CreateVirtualFolder(TCObject obj, String virtualFolderName, String tql)
         {
-            TCObject vf = obj.Search("->subparts:TCVirtualFolder[Name==\"" + virtualFolderName + "\"]").FirstOrDefault();
+            TCVirtualFolder vf = (TCVirtualFolder)obj.Search("->subparts:TCVirtualFolder[Name==\"" + virtualFolderName + "\"]").FirstOrDefault();
 
-            //Create virtual folder if required
+            // Create virtual folder if required
             if (vf == null)
             {
                 vf = (obj as TCFolder).CreateVirtualFolder();
             }
 
-                ((TCVirtualFolder)vf).Name = virtualFolderName;
-            ((TCVirtualFolder)vf).Query = tql;
-            ((TCVirtualFolder)vf).RefreshVirtualFolder();
+            vf.Name = virtualFolderName;
+            vf.Query = tql;
+            vf.RefreshVirtualFolder();
 
-            return ((TCVirtualFolder)vf);
+            return vf;
         }
 
         public class RequirementHelpers
