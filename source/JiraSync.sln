@@ -5,6 +5,11 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraSync", "JiraSync\JiraSync.csproj", "{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "TestHarness\TestHarness.csproj", "{E610E385-F54F-4057-BF13-4D40AD064213}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6} = {B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E610E385-F54F-4057-BF13-4D40AD064213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E610E385-F54F-4057-BF13-4D40AD064213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E610E385-F54F-4057-BF13-4D40AD064213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E610E385-F54F-4057-BF13-4D40AD064213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

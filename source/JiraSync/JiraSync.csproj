@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.cs" />
+    <Compile Include="JiraFields.cs" />
     <Compile Include="JiraHelpers.cs" />
     <Compile Include="JiraSyncAddOn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
