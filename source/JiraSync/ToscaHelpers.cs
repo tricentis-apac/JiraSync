@@ -63,18 +63,35 @@ namespace JiraSync
             return issuesDef;
         }
 
-        public static Requirement FindRequirementByJiraProperty(TCObject obj, string jiraTicketNumber)
+        private TCVirtualFolder CreateVirtualFolder(TCObject obj, String virtualFolderName, String tql)
         {
-            TCObject o = obj.Search("=>SUBPARTS:Requirement[" + Global.JiraTicketAttributeName + "==\"" + jiraTicketNumber + "\"]").FirstOrDefault();
+            TCObject vf = obj.Search("->subparts:TCVirtualFolder[Name==\"" + virtualFolderName + "\"]").FirstOrDefault();
 
-            if (o == null)
-                return null;
-            else
-                return (Requirement)o;
+            //Create virtual folder if required
+            if (vf == null)
+            {
+                vf = (obj as TCFolder).CreateVirtualFolder();
+            }
+
+                ((TCVirtualFolder)vf).Name = virtualFolderName;
+            ((TCVirtualFolder)vf).Query = tql;
+            ((TCVirtualFolder)vf).RefreshVirtualFolder();
+
+            return ((TCVirtualFolder)vf);
         }
 
         public class RequirementHelpers
         {
+            public static Requirement FindRequirementByJiraProperty(TCObject obj, string jiraTicketNumber)
+            {
+                TCObject o = obj.Search("=>SUBPARTS:Requirement[" + Global.JiraTicketAttributeName + "==\"" + jiraTicketNumber + "\"]").FirstOrDefault();
+
+                if (o == null)
+                    return null;
+                else
+                    return (Requirement)o;
+            }
+
             public static Requirement CreateRequirement(RequirementSet parent, String title, Dictionary<String, String> properties)
             {
                 Requirement req = parent.CreateRequirement();

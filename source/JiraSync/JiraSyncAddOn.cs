@@ -96,7 +96,7 @@ namespace JiraSync
                 foreach (dynamic issue in resp.issues)
                 {
                     // Find if it exists already
-                    Requirement reqObj = ToscaHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
+                    Requirement reqObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
 
                     #region Jira Parent Object
                     String jiraParent = "";
@@ -110,7 +110,7 @@ namespace JiraSync
                     if (obj.Property("parent") != null)
                     {
                         jiraParent = Convert.ToString(issue.fields.parent.key);
-                        reqParentObj = ToscaHelpers.FindRequirementByJiraProperty(requirementSet, jiraParent);
+                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, jiraParent);
                     }
                     #endregion
 
