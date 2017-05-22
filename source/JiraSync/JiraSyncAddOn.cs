@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-
+using System.Threading.Tasks;
 using Tricentis.TCAddOns;
 using Tricentis.TCAPIObjects.Objects;
 using static JiraSync.JiraHelpers;
@@ -86,64 +86,71 @@ namespace JiraSync
         {
             String username = taskContext.GetStringValue("Jira Username", false);
             String password = taskContext.GetStringValue("Jira Password", true);
-
+            var jira = new JiraService.Jira(requirementSet.GetAttributeValue(Global.JiraBaseURL), username, password);
+            var issueService = jira.GetIssueService();
             String startTime = DateTime.Now.ToString("yyyyMMddHHmmss");
-
-            HttpResponseMessage response = JiraHelpers.Search(username, password, requirementSet.GetAttributeValue(Global.JiraBaseURL), "?jql=" + requirementSet.GetAttributeValue(Global.JiraBaseJQL));
-            if (response.IsSuccessStatusCode)
+            string jql = requirementSet.GetAttributeValue(Global.JiraBaseJQL);
+            JiraService.Issue.Issue[] issues = null;
+            Task<JiraService.Issue.Issue[]> issueTask = null; 
+            try
             {
-                dynamic resp = JsonConvert.DeserializeObject(response.Content.ReadAsStringAsync().Result);
+                issueTask = issueService.SearchAsync(jql);
+                while(!issueTask.IsCompleted)
+                {
+                    taskContext.ShowStatusInfo($"Gettign issues for JQL: {jql}");
+                    System.Threading.Thread.Sleep(100);
+                }
+                //order the issues so that subtasks are not created before parent tasks
+                issues = issueTask.Result.OrderBy(x=>x.id).ToArray();
+            }
+            catch (Exception e)
+            {
+                taskContext.ShowStatusInfo($"Error synchronising: {e.Message}");
+            } 
 
-                foreach (dynamic issue in resp.issues)
+            if (issues != null)
+            {
+                foreach (var issue in issues)
                 {
                     // Find if it exists already
-                    Requirement reqObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
 
                     #region Jira Parent Object
-                    String jiraParent = "";
+                    Requirement reqObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
+                    JiraService.Issue.Issue parent = issue.fields.parent;
                     Requirement reqParentObj = null;
-
-                    JObject obj = issue.fields;
-                    String key = Convert.ToString(issue.key);
-                    String summary = obj.Property("summary").Value.ToString();
-
                     // Check if it is a child of something
-                    if (obj.Property("parent") != null)
-                    {
-                        jiraParent = Convert.ToString(issue.fields.parent.key);
-                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, jiraParent);
-                    }
+                    if(parent != null)
+                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet,parent.key);
                     #endregion
 
                     // Meant to have a parent requirement or in root
-                    if (String.IsNullOrWhiteSpace(jiraParent))
+                    if (parent == null)
                     {   // Belongs in root
-
-                        if (reqObj == null)
-                            CreateRequirement((RequirementSet)requirementSet, key, summary, startTime);
+                        if (reqParentObj == null)
+                            CreateRequirement((RequirementSet)requirementSet, issue.key, issue.fields.summary, startTime);
                         else
-                            UpdateRequirement(reqObj, key, summary, startTime, requirementSet);
+                            UpdateRequirement(reqObj, issue.key, issue.fields.summary, startTime, requirementSet);
                     }
                     else
                     {   // Belongs to a requirement
                         if (reqParentObj == null)
                         {
                             //Create temporary parent first
-                            Requirement parentReq = CreateRequirement((RequirementSet)requirementSet, jiraParent, jiraParent, startTime);
+                            Requirement parentReq = CreateRequirement((RequirementSet)requirementSet, parent.key, parent.key, startTime);
 
                             //Create/Update the requirement in temporary/existing parent
                             if (reqObj == null)
-                                CreateRequirement(parentReq, key, summary, startTime);
+                                CreateRequirement(parentReq, issue.key, issue.fields.summary, startTime);
                             else
-                                UpdateRequirement(reqObj, key, summary, startTime, parentReq);
+                                UpdateRequirement(reqObj, issue.key, issue.fields.summary, startTime, parentReq);
                         }
                         else
                         {
                             // Create sub requirement in requirement
                             if (reqObj == null)
-                                CreateRequirement(reqParentObj, key, summary, startTime);
+                                CreateRequirement(reqParentObj, issue.key, issue.fields.summary, startTime);
                             else
-                                UpdateRequirement(reqObj, key, summary, startTime, reqParentObj);
+                                UpdateRequirement(reqObj, issue.key, issue.fields.summary, startTime, reqParentObj);
                         }
                     }
                 }
@@ -163,18 +170,8 @@ namespace JiraSync
                 vf.RefreshVirtualFolder(); // Force refresh to show. Otherwise, results are sometimes cached from last time it was refreshed.
 
                 // Prompt status
-                JArray issues = resp.issues;
-                taskContext.ShowMessageBox("Jira Sync", issues.Count.ToString() + " requirements have been synchronised.");
+                taskContext.ShowMessageBox("Jira Sync", issues.Length.ToString() + " requirements have been synchronised.");
             }
-            else
-            {
-                // Invalid response from Jira.
-                // Handle this somehow.
-
-                taskContext.ShowErrorMessage("Jira Sync", response.StatusCode + Environment.NewLine + response.Content.ReadAsStringAsync());
-            }
-
-
             return null;
         }
 
