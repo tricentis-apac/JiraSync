@@ -9,7 +9,7 @@ namespace JiraService.Issue.Field
     public class ProjectField
     {
         public string key { get; set; }
-        public int id { get; set; }
+        public int? id { get; set; }
         public string name { get; set; }
     }
 }

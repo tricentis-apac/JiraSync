@@ -9,7 +9,9 @@ namespace JiraService.Issue
 {
     public class IssueFields
     {
-        public ProjectField Project { get; set; }
-        public IssueTypeField IssueType { get; set; }
+        public ProjectField project { get; set; }
+        public IssueTypeField issuetype { get; set; }
+        public string summary { get; set; }
+        public string description { get; set; }
     }
 }

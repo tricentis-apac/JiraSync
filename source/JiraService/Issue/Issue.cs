@@ -14,7 +14,7 @@ namespace JiraService.Issue
         }
         public string key { get; set; }
         public string self { get; set; }
-        public int id { get; set; }
+        public int? id { get; set; }
         public IssueFields fields { get; set; }
     }
 }
