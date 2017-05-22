@@ -28,6 +28,9 @@ namespace JiraService
         {
             return new Issue.IssueService(client, serializerSettings);
         }
-
+        public Field.FieldService GetFieldService()
+        {
+            return new Field.FieldService(client, serializerSettings);
+        }
     }
 }

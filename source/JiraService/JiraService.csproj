@@ -44,8 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Field\Field.cs" />
+    <Compile Include="Field\FieldService.cs" />
+    <Compile Include="Issue\Field\IssueLink.cs" />
     <Compile Include="Issue\Field\IssueTypeField.cs" />
     <Compile Include="Issue\Field\ProjectField.cs" />
+    <Compile Include="Issue\Field\StatusField.cs" />
     <Compile Include="Issue\Issue.cs" />
     <Compile Include="Issue\IssueFields.cs" />
     <Compile Include="Issue\IssueService.cs" />

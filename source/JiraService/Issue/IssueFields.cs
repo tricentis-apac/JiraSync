@@ -13,5 +13,9 @@ namespace JiraService.Issue
         public IssueTypeField issuetype { get; set; }
         public string summary { get; set; }
         public string description { get; set; }
+        public Issuelink[] issuelinks { get; set; }
+        public Issue[] subtasks { get; set; }
+        public Issue parent { get; set; }
+        public StatusField status { get; set; }
     }
 }
