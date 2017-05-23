@@ -18,6 +18,7 @@ namespace JiraSync
         public const String JiraDefectID = "JiraDefectID";
         public const String JiraDefectKey = "JiraDefectKey";
         public const String JiraDefectURL = "JiraDefectURL";
+        public const String JiraDefectProject = "JiraDefectProjectKey";
 
         public enum JiraSyncStates
         {

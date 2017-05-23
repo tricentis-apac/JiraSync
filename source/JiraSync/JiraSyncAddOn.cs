@@ -42,6 +42,8 @@ namespace JiraSync
             ToscaHelpers.CreateIssuesProperties("Issue", Global.JiraDefectKey);
 
             ToscaHelpers.CreateIssuesProperties("Folder", Global.JiraDefectURL);
+            ToscaHelpers.CreateIssuesProperties("Folder", Global.JiraBaseJQL);
+            ToscaHelpers.CreateIssuesProperties("Folder", Global.JiraDefectProject);
 
             return null;
         }
@@ -91,22 +93,22 @@ namespace JiraSync
             String startTime = DateTime.Now.ToString("yyyyMMddHHmmss");
             string jql = requirementSet.GetAttributeValue(Global.JiraBaseJQL);
             JiraService.Issue.Issue[] issues = null;
-            Task<JiraService.Issue.Issue[]> issueTask = null; 
+            Task<JiraService.Issue.Issue[]> issueTask = null;
             try
             {
                 issueTask = issueService.SearchAsync(jql);
-                while(!issueTask.IsCompleted)
+                while (!issueTask.IsCompleted)
                 {
                     taskContext.ShowStatusInfo($"Gettign issues for JQL: {jql}");
                     System.Threading.Thread.Sleep(100);
                 }
                 //order the issues so that subtasks are not created before parent tasks
-                issues = issueTask.Result.OrderBy(x=>x.id).ToArray();
+                issues = issueTask.Result.OrderBy(x => x.id).ToArray();
             }
             catch (Exception e)
             {
                 taskContext.ShowStatusInfo($"Error synchronising: {e.Message}");
-            } 
+            }
 
             if (issues != null)
             {
@@ -119,8 +121,8 @@ namespace JiraSync
                     JiraService.Issue.Issue parent = issue.fields.parent;
                     Requirement reqParentObj = null;
                     // Check if it is a child of something
-                    if(parent != null)
-                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet,parent.key);
+                    if (parent != null)
+                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, parent.key);
                     #endregion
 
                     // Meant to have a parent requirement or in root
@@ -274,7 +276,9 @@ namespace JiraSync
                 if (obj is TCFolder)
                 {
                     TCFolder f = (TCFolder)obj;
-                    return (f.PossibleContent.Contains("Issue"));
+                    
+                    return (f.PossibleContent.Contains("Issue") 
+                        && !string.IsNullOrEmpty(f.GetAttributeValue(Global.JiraDefectURL)));
                 }
 
                 return (obj is Issue);
@@ -289,7 +293,48 @@ namespace JiraSync
 
         public override TCObject Execute(TCObject objectToExecuteOn, TCAddOnTaskContext taskContext)
         {
-            throw new NotImplementedException();
+
+            TCFolder f = (TCFolder)objectToExecuteOn;
+            IEnumerable<Issue> childIssues = f.Items.Cast<Issue>();
+            String username = taskContext.GetStringValue("Jira Username", false);
+            String password = taskContext.GetStringValue("Jira Password", true);
+            var jira = new JiraService.Jira(f.GetAttributeValue(Global.JiraDefectURL), username, password);
+            var issueService = jira.GetIssueService();
+            foreach (var issue in childIssues)
+            {
+                string storedIssueKey = issue.GetAttributeValue(Global.JiraDefectKey);
+                if (!string.IsNullOrEmpty(storedIssueKey))
+                {
+                    var jiraIssue = issueService.GetAsync(storedIssueKey).Result;
+                    issue.State = jiraIssue.fields.status.name;
+                    issue.Name = jiraIssue.fields.summary;
+                }
+                else //No existing Jira issue exists
+                {
+                    string description = issue.Description;
+                    if(issue.Links.Any())
+                    {
+                        var executionLog = issue.Links.First().ExecutionTestCaseLog;
+                        description = $"TEST: {executionLog.Name}\r\n{executionLog.AggregatedDescription}";
+                    }
+                    JiraService.Issue.Issue createdIssue = issueService.CreateAsync(new JiraService.Issue.Issue
+                    {
+                        fields = new JiraService.Issue.IssueFields
+                        {
+                            summary = issue.Name,
+                            description = description,
+                            //Create other fields here
+                            project = new JiraService.Issue.Field.ProjectField { key = f.GetAttributeValue(Global.JiraDefectProject) },
+                            issuetype = new JiraService.Issue.Field.IssueTypeField { name="Bug"}
+                        }
+                    }).Result;
+                    createdIssue = issueService.GetAsync(createdIssue.key).Result; //The created issue only contains a shell, no fields
+                    issue.SetAttibuteValue(Global.JiraDefectKey, createdIssue.key);
+                    issue.State = createdIssue.fields.status.name;
+                }
+                
+            }
+            return objectToExecuteOn;
         }
     }
 }
