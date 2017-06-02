@@ -127,62 +127,9 @@ namespace JiraSync
             {
                 foreach (var issue in issues)
                 {
-                    // Find if it exists already
-                    #region Jira Parent Object
-                    Requirement reqObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
-                    JiraService.Issue.Issue parent = issue.fields.parent;
-                    Requirement reqParentObj = null;
-                    // Check if it is a child of something
-                    if (parent != null)
-                        reqParentObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, parent.key);
-                    #endregion
-
-                    // Meant to have a parent requirement or in root
-                    if (parent == null)
-                    {   // Belongs in root
-                        if (reqParentObj == null)
-                            CreateRequirement((RequirementSet)requirementSet, issue.key, issue.fields.summary, startTime);
-                        else
-                            UpdateRequirement(reqObj, issue.key, issue.fields.summary, startTime, requirementSet);
-                    }
-                    else
-                    {   // Belongs to a requirement
-                        if (reqParentObj == null)
-                        {
-                            //Create temporary parent first
-                            Requirement parentReq = CreateRequirement((RequirementSet)requirementSet, parent.key, parent.key, startTime);
-
-                            //Create/Update the requirement in temporary/existing parent
-                            if (reqObj == null)
-                                CreateRequirement(parentReq, issue.key, issue.fields.summary, startTime);
-                            else
-                                UpdateRequirement(reqObj, issue.key, issue.fields.summary, startTime, parentReq);
-                        }
-                        else
-                        {
-                            // Create sub requirement in requirement
-                            if (reqObj == null)
-                                CreateRequirement(reqParentObj, issue.key, issue.fields.summary, startTime);
-                            else
-                                UpdateRequirement(reqObj, issue.key, issue.fields.summary, startTime, reqParentObj);
-                        }
-                    }
+                    CreateOrUpdateRequirement(rs, config, issue);
                 }
-
-                // Reset state for those not updated
-                foreach (TCObject obj in requirementSet.Search("=>SUBPARTS:Requirement"))
-                {
-                    if (obj.GetAttributeValue(Global.JiraLastSyncedAttributeName) != startTime)
-                    {
-                        obj.SetAttibuteValue(Global.JiraSyncStateAttributeName, Global.JiraSyncStates.NotUpdated);
-                    }
-                }
-
-                // Create Virtual Folder if required
-                TCObject rsParent = requirementSet.Search("->SUPERPART").First();
-                TCVirtualFolder vf = ToscaHelpers.CreateVirtualFolder(rsParent, requirementSet.DisplayedName + " - Not Synced", "->SUPERPART=>SUBPARTS:RequirementSet[Name==\"JIR Project\"]=>SUBPARTS:Requirement[JiraSyncState!=\"" + Global.JiraSyncStates.Updated + "\"]");
-                vf.RefreshVirtualFolder(); // Force refresh to show. Otherwise, results are sometimes cached from last time it was refreshed.
-
+                
                 // Prompt status
                 taskContext.ShowMessageBox("Jira Sync", issues.Length.ToString() + " requirements have been synchronised.");
             }
@@ -201,8 +148,8 @@ namespace JiraSync
                 if(parent != null)
                     parent.Move(req);
             }
-            req.SetAttibuteValue(Global.JiraDefectKey, issue.key);
-            req.SetAttibuteValue(Global.JiraDefectID, issue.id);
+            req.SetAttibuteValue(Global.JiraTicketAttributeName, issue.key);
+            //req.SetAttibuteValue(Global.JiraDefectID, issue.id);
             foreach (var fieldMap in config.fieldMaps)
             {
                 string jiraValue = issue.fields.GetValueByPath(fieldMap.jiraJsonPath);
@@ -221,53 +168,9 @@ namespace JiraSync
 
         private Requirement FindRequirementForIssue(RequirementSet rs, string issueKey)
         {
-            Requirement req = rs.Search($"=>SUBPARTS:Requirement[{Global.JiraDefectKey}==\"{issueKey}\"").FirstOrDefault() as Requirement;
+            Requirement req = rs.Search($"=>SUBPARTS:Requirement[{Global.JiraTicketAttributeName}==\"{issueKey}\"]").FirstOrDefault() as Requirement;
             return req;
         }
-
-        #region Requirement Update Helpers
-        private Requirement UpdateRequirement(Requirement req, string jiraTicketNumber, string name, string syncDateTime, TCObject parent)
-        {
-            Dictionary<String, String> props = new Dictionary<string, string>();
-            props.Add(Global.JiraLastSyncedAttributeName, syncDateTime);
-            props.Add(Global.JiraSyncStateAttributeName, Global.JiraSyncStates.Updated.ToString());
-
-            ToscaHelpers.RequirementHelpers.UpdateRequirement(req, jiraTicketNumber + "-" + name, props);
-
-            #region Move object to new parent
-            TCObject reqCurrentParent = req.Search("->SUPERPART").First();
-            if (reqCurrentParent.UniqueId != parent.UniqueId)
-            {
-                //req.Move(parent);
-                parent.Move(req);
-            }
-            #endregion
-
-            return req;
-        }
-
-        private Requirement CreateRequirement(RequirementSet reqSetParent, string jiraTicketNumber, string name, string syncDateTime)
-        {
-            Dictionary<String, String> props = new Dictionary<string, string>();
-            props.Add(Global.JiraLastSyncedAttributeName, syncDateTime);
-            props.Add(Global.JiraTicketAttributeName, jiraTicketNumber);
-            props.Add(Global.JiraSyncStateAttributeName, Global.JiraSyncStates.Updated.ToString());
-
-            Requirement r = ToscaHelpers.RequirementHelpers.CreateRequirement(reqSetParent, jiraTicketNumber + "-" + name, props);
-            return r;
-        }
-
-        private Requirement CreateRequirement(Requirement reqParent, string jiraTicketNumber, string name, string syncDateTime)
-        {
-            Dictionary<String, String> props = new Dictionary<string, string>();
-            props.Add(Global.JiraLastSyncedAttributeName, syncDateTime);
-            props.Add(Global.JiraTicketAttributeName, jiraTicketNumber);
-            props.Add(Global.JiraSyncStateAttributeName, Global.JiraSyncStates.Updated.ToString());
-
-            Requirement r = ToscaHelpers.RequirementHelpers.CreateRequirement(reqParent, jiraTicketNumber + "-" + name, props);
-            return r;
-        }
-        #endregion
     }
 
     public class JiraSubmitDefect : TCAddOnTask
