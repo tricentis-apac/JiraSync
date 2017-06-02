@@ -20,6 +20,8 @@ namespace JiraSync
         public const String JiraDefectURL = "JiraDefectURL";
         public const String JiraDefectProject = "JiraDefectProjectKey";
 
+        public const string JiraConfigAttachmentName = "JiraConfig.json";
+
         public enum JiraSyncStates
         {
             Updated,

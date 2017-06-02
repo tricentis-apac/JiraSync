@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}</ProjectGuid>
+    <ProjectGuid>{952967D2-C973-480A-8477-2F46ACDE2C3E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JiraService</RootNamespace>
-    <AssemblyName>JiraService</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <RootNamespace>Jira.Mock</RootNamespace>
+    <AssemblyName>Jira.Mock</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -39,10 +39,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.1.18802, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\TRICENTIS\Tosca Testsuite\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,25 +49,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Field\Field.cs" />
-    <Compile Include="Field\FieldService.cs" />
-    <Compile Include="Issue\Field\IssueLink.cs" />
-    <Compile Include="Issue\Field\IssueTypeField.cs" />
-    <Compile Include="Issue\Field\ProjectField.cs" />
-    <Compile Include="Issue\Field\StatusField.cs" />
-    <Compile Include="Issue\Issue.cs" />
-    <Compile Include="Issue\IssueConverter.cs" />
-    <Compile Include="Issue\IssueFields.cs" />
-    <Compile Include="Issue\IssueService.cs" />
-    <Compile Include="Issue\SearchResults.cs" />
-    <Compile Include="Jira.cs" />
+    <Compile Include="MockJiraService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jira.Mock\Jira.Mock.csproj">
-      <Project>{952967d2-c973-480a-8477-2f46acde2c3e}</Project>
-      <Name>Jira.Mock</Name>
-    </ProjectReference>
+    <None Include="Responses\field.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Responses\issue.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Responses\issuePost.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Responses\search.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

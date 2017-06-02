@@ -1,35 +1,39 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraSync", "JiraSync\JiraSync.csproj", "{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHarness", "TestHarness\TestHarness.csproj", "{E610E385-F54F-4057-BF13-4D40AD064213}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6} = {B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraService", "JiraService\JiraService.csproj", "{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jira.Mock", "Jira.Mock\Jira.Mock.csproj", "{952967D2-C973-480A-8477-2F46ACDE2C3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Development|Any CPU = Development|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Development|Any CPU.ActiveCfg = DEV|Any CPU
+		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Development|Any CPU.Build.0 = DEV|Any CPU
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B09485E9-7C0E-452F-9BCB-0BF358C8EDC6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E610E385-F54F-4057-BF13-4D40AD064213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E610E385-F54F-4057-BF13-4D40AD064213}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E610E385-F54F-4057-BF13-4D40AD064213}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E610E385-F54F-4057-BF13-4D40AD064213}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}.Development|Any CPU.ActiveCfg = DEV|Any CPU
+		{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}.Development|Any CPU.Build.0 = DEV|Any CPU
 		{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C94F0EA5-022D-45B8-862C-A9E9784FD2A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Development|Any CPU.ActiveCfg = DEV|Any CPU
+		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Development|Any CPU.Build.0 = DEV|Any CPU
+		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

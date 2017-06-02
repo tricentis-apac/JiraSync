@@ -1,0 +1,215 @@
+﻿{
+  "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+  "id": "10005",
+  "self": "https://tricentisdev.atlassian.net/rest/api/latest/issue/10005",
+  "key": "TD-6",
+  "fields": {
+    "issuetype": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/issuetype/10000",
+      "id": "10000",
+      "description": "Created by JIRA Agile - do not edit or delete. Issue type for a user story.",
+      "iconUrl": "https://tricentisdev.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10315&avatarType=issuetype",
+      "name": "Story",
+      "subtask": false,
+      "avatarId": 10315
+    },
+    "timespent": null,
+    "project": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/project/10000",
+      "id": "10000",
+      "key": "TD",
+      "name": "TDM Demo",
+      "avatarUrls": {
+        "48x48": "https://tricentisdev.atlassian.net/secure/projectavatar?avatarId=10324",
+        "24x24": "https://tricentisdev.atlassian.net/secure/projectavatar?size=small&avatarId=10324",
+        "16x16": "https://tricentisdev.atlassian.net/secure/projectavatar?size=xsmall&avatarId=10324",
+        "32x32": "https://tricentisdev.atlassian.net/secure/projectavatar?size=medium&avatarId=10324"
+      }
+    },
+    "fixVersions": [ ],
+    "aggregatetimespent": null,
+    "resolution": null,
+    "customfield_10500": null,
+    "resolutiondate": null,
+    "workratio": -1,
+    "watches": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/issue/TD-6/watchers",
+      "watchCount": 1,
+      "isWatching": true
+    },
+    "lastViewed": "2017-05-31T02:16:38.456+0000",
+    "created": "2016-11-25T03:32:41.834+0000",
+    "customfield_10021": null,
+    "customfield_10022": [ ],
+    "customfield_10023": null,
+    "priority": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/priority/1",
+      "iconUrl": "https://tricentisdev.atlassian.net/images/icons/priorities/highest.svg",
+      "name": "Highest",
+      "id": "1"
+    },
+    "customfield_10100": null,
+    "customfield_10024": null,
+    "customfield_10025": null,
+    "customfield_10300": null,
+    "labels": [ ],
+    "aggregatetimeoriginalestimate": null,
+    "timeestimate": null,
+    "versions": [ ],
+    "issuelinks": [
+      {
+        "id": "10006",
+        "self": "https://tricentisdev.atlassian.net/rest/api/2/issueLink/10006",
+        "type": {
+          "id": "10003",
+          "name": "Relates",
+          "inward": "relates to",
+          "outward": "relates to",
+          "self": "https://tricentisdev.atlassian.net/rest/api/2/issueLinkType/10003"
+        },
+        "inwardIssue": {
+          "id": "10113",
+          "key": "TD-11",
+          "self": "https://tricentisdev.atlassian.net/rest/api/2/issue/10113",
+          "fields": {
+            "summary": "Created for updating",
+            "status": {
+              "self": "https://tricentisdev.atlassian.net/rest/api/2/status/10000",
+              "description": "",
+              "iconUrl": "https://tricentisdev.atlassian.net/",
+              "name": "To Do",
+              "id": "10000",
+              "statusCategory": {
+                "self": "https://tricentisdev.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "To Do"
+              }
+            },
+            "priority": {
+              "self": "https://tricentisdev.atlassian.net/rest/api/2/priority/3",
+              "iconUrl": "https://tricentisdev.atlassian.net/images/icons/priorities/medium.svg",
+              "name": "Medium",
+              "id": "3"
+            },
+            "issuetype": {
+              "self": "https://tricentisdev.atlassian.net/rest/api/2/issuetype/10001",
+              "id": "10001",
+              "description": "A task that needs to be done.",
+              "iconUrl": "https://tricentisdev.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype",
+              "name": "Task",
+              "subtask": false,
+              "avatarId": 10318
+            }
+          }
+        }
+      }
+    ],
+    "assignee": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/user?username=admin",
+      "name": "admin",
+      "key": "admin",
+      "accountId": "557058:bfa6079a-2ed2-41ce-8482-1691c8f51396",
+      "emailAddress": "d.colwell@tricentis.com",
+      "avatarUrls": {
+        "48x48": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=48&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D48%26noRedirect%3Dtrue",
+        "24x24": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=24&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D24%26noRedirect%3Dtrue",
+        "16x16": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=16&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D16%26noRedirect%3Dtrue",
+        "32x32": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=32&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D32%26noRedirect%3Dtrue"
+      },
+      "displayName": "David Colwell",
+      "active": true,
+      "timeZone": "Australia/Sydney"
+    },
+    "updated": "2017-05-22T08:25:05.380+0000",
+    "status": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/status/10000",
+      "description": "",
+      "iconUrl": "https://tricentisdev.atlassian.net/",
+      "name": "To Do",
+      "id": "10000",
+      "statusCategory": {
+        "self": "https://tricentisdev.atlassian.net/rest/api/2/statuscategory/2",
+        "id": 2,
+        "key": "new",
+        "colorName": "blue-gray",
+        "name": "To Do"
+      }
+    },
+    "components": [ ],
+    "timeoriginalestimate": null,
+    "description": "This is a description",
+    "timetracking": { },
+    "customfield_10006": null,
+    "customfield_10007": "0|i00013:",
+    "aggregatetimeestimate": null,
+    "attachment": [ ],
+    "summary": "UPDATED ONLINE",
+    "creator": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/user?username=admin",
+      "name": "admin",
+      "key": "admin",
+      "accountId": "557058:bfa6079a-2ed2-41ce-8482-1691c8f51396",
+      "emailAddress": "d.colwell@tricentis.com",
+      "avatarUrls": {
+        "48x48": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=48&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D48%26noRedirect%3Dtrue",
+        "24x24": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=24&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D24%26noRedirect%3Dtrue",
+        "16x16": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=16&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D16%26noRedirect%3Dtrue",
+        "32x32": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=32&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D32%26noRedirect%3Dtrue"
+      },
+      "displayName": "David Colwell",
+      "active": true,
+      "timeZone": "Australia/Sydney"
+    },
+    "subtasks": [ ],
+    "reporter": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/user?username=admin",
+      "name": "admin",
+      "key": "admin",
+      "accountId": "557058:bfa6079a-2ed2-41ce-8482-1691c8f51396",
+      "emailAddress": "d.colwell@tricentis.com",
+      "avatarUrls": {
+        "48x48": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=48&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D48%26noRedirect%3Dtrue",
+        "24x24": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=24&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D24%26noRedirect%3Dtrue",
+        "16x16": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=16&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D16%26noRedirect%3Dtrue",
+        "32x32": "https://avatar-cdn.atlassian.com/83c8220038400f07d658f32ad52fa070?s=32&d=https%3A%2F%2Fsecure.gravatar.com%2Favatar%2F83c8220038400f07d658f32ad52fa070%3Fd%3Dmm%26s%3D32%26noRedirect%3Dtrue"
+      },
+      "displayName": "David Colwell",
+      "active": true,
+      "timeZone": "Australia/Sydney"
+    },
+    "customfield_10000": null,
+    "aggregateprogress": {
+      "progress": 0,
+      "total": 0
+    },
+    "customfield_10001": null,
+    "customfield_10200": "{}",
+    "customfield_10002": null,
+    "customfield_10400": null,
+    "environment": null,
+    "duedate": null,
+    "progress": {
+      "progress": 0,
+      "total": 0
+    },
+    "comment": {
+      "comments": [ ],
+      "maxResults": 0,
+      "total": 0,
+      "startAt": 0
+    },
+    "votes": {
+      "self": "https://tricentisdev.atlassian.net/rest/api/2/issue/TD-6/votes",
+      "votes": 0,
+      "hasVoted": false
+    },
+    "worklog": {
+      "startAt": 0,
+      "maxResults": 20,
+      "total": 0,
+      "worklogs": [ ]
+    }
+  }
+}

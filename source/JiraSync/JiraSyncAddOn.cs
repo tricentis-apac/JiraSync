@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using JiraSync.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -66,8 +67,6 @@ namespace JiraSync
             if (baseURL == "")
                 baseURL = "https://subdomain.atlassian.net/rest/api/2/search";
 
-            if (jql == "")
-                jql = "priority=medium";
 
             objectToExecuteOn.SetAttibuteValue(Global.JiraBaseURL, baseURL);
             objectToExecuteOn.SetAttibuteValue(Global.JiraBaseJQL, jql);
@@ -88,10 +87,23 @@ namespace JiraSync
         {
             String username = taskContext.GetStringValue("Jira Username", false);
             String password = taskContext.GetStringValue("Jira Password", true);
-            var jira = new JiraService.Jira(requirementSet.GetAttributeValue(Global.JiraBaseURL), username, password);
+            RequirementSet rs = (RequirementSet)requirementSet;
+            JiraConfig config = rs.GetJiraConfig();
+            if (config == null)
+            {
+                string url = taskContext.GetStringValue("Jira Instance URL: ", false);
+                string jqlValue = taskContext.GetStringValue("JQL Filter for requirements: ", false);
+                config = new JiraConfig { baseURL = url, jqlFilter = jqlValue, fieldMaps = new List<FieldMap>()
+                {
+                    new FieldMap {direction = Direction.jira_to_tosca, jiraJsonPath="$.fields.summary", toscaField="Name" }
+                }
+                };
+                rs.SaveConfig(config);
+            }
+            var jira = new JiraService.Jira(config.baseURL, username, password);
             var issueService = jira.GetIssueService();
             String startTime = DateTime.Now.ToString("yyyyMMddHHmmss");
-            string jql = requirementSet.GetAttributeValue(Global.JiraBaseJQL);
+            string jql = config.jqlFilter;
             JiraService.Issue.Issue[] issues = null;
             Task<JiraService.Issue.Issue[]> issueTask = null;
             try
@@ -104,6 +116,7 @@ namespace JiraSync
                 }
                 //order the issues so that subtasks are not created before parent tasks
                 issues = issueTask.Result.OrderBy(x => x.id).ToArray();
+                taskContext.ShowStatusInfo("Creating Requirements");
             }
             catch (Exception e)
             {
@@ -115,7 +128,6 @@ namespace JiraSync
                 foreach (var issue in issues)
                 {
                     // Find if it exists already
-
                     #region Jira Parent Object
                     Requirement reqObj = ToscaHelpers.RequirementHelpers.FindRequirementByJiraProperty(requirementSet, Convert.ToString(issue.key));
                     JiraService.Issue.Issue parent = issue.fields.parent;
@@ -177,7 +189,44 @@ namespace JiraSync
             return null;
         }
 
-        private Requirement UpdateRequirement(Requirement req, String jiraTicketNumber, String name, String syncDateTime, TCObject parent)
+        private Requirement CreateOrUpdateRequirement(RequirementSet rs, JiraConfig config, JiraService.Issue.Issue issue)
+        {
+            Requirement req = FindRequirementForIssue(rs, issue.key);
+            if (req == null)
+                req = rs.CreateRequirement();
+            //Move requirement to parent
+            if (issue.fields.parent != null)
+            {
+                Requirement parent = FindRequirementForIssue(rs, issue.fields.parent.key);
+                if(parent != null)
+                    parent.Move(req);
+            }
+            req.SetAttibuteValue(Global.JiraDefectKey, issue.key);
+            req.SetAttibuteValue(Global.JiraDefectID, issue.id);
+            foreach (var fieldMap in config.fieldMaps)
+            {
+                string jiraValue = issue.fields.GetValueByPath(fieldMap.jiraJsonPath);
+                try
+                {
+                    req.SetAttibuteValue(fieldMap.toscaField, jiraValue);
+                }
+                catch (Exception)
+                {
+                    //NOM NOM NOM: Tasty tasty exceptions
+                }
+            }
+            return req;
+        }
+
+
+        private Requirement FindRequirementForIssue(RequirementSet rs, string issueKey)
+        {
+            Requirement req = rs.Search($"=>SUBPARTS:Requirement[{Global.JiraDefectKey}==\"{issueKey}\"").FirstOrDefault() as Requirement;
+            return req;
+        }
+
+        #region Requirement Update Helpers
+        private Requirement UpdateRequirement(Requirement req, string jiraTicketNumber, string name, string syncDateTime, TCObject parent)
         {
             Dictionary<String, String> props = new Dictionary<string, string>();
             props.Add(Global.JiraLastSyncedAttributeName, syncDateTime);
@@ -197,7 +246,7 @@ namespace JiraSync
             return req;
         }
 
-        private Requirement CreateRequirement(RequirementSet reqSetParent, String jiraTicketNumber, String name, String syncDateTime)
+        private Requirement CreateRequirement(RequirementSet reqSetParent, string jiraTicketNumber, string name, string syncDateTime)
         {
             Dictionary<String, String> props = new Dictionary<string, string>();
             props.Add(Global.JiraLastSyncedAttributeName, syncDateTime);
@@ -208,7 +257,7 @@ namespace JiraSync
             return r;
         }
 
-        private Requirement CreateRequirement(Requirement reqParent, String jiraTicketNumber, String name, String syncDateTime)
+        private Requirement CreateRequirement(Requirement reqParent, string jiraTicketNumber, string name, string syncDateTime)
         {
             Dictionary<String, String> props = new Dictionary<string, string>();
             props.Add(Global.JiraLastSyncedAttributeName, syncDateTime);
@@ -218,6 +267,7 @@ namespace JiraSync
             Requirement r = ToscaHelpers.RequirementHelpers.CreateRequirement(reqParent, jiraTicketNumber + "-" + name, props);
             return r;
         }
+        #endregion
     }
 
     public class JiraSubmitDefect : TCAddOnTask
@@ -236,12 +286,13 @@ namespace JiraSync
             #region Get URL
 
             String url = "";
-            List<TCObject> folders = objectToExecuteOn.Search("=>SUPERPART:TCFolder");
-            foreach (TCObject folder in folders.OrderByDescending(f => f.NodePath))
+            List<TCFolder> folders = objectToExecuteOn.Search("=>SUPERPART:TCFolder").Cast<TCFolder>().ToList();
+            foreach (TCFolder folder in folders.OrderByDescending(f => f.NodePath))
             {
-                if (folder.GetPropertyNames().Contains(Global.JiraDefectURL))
+                var config = folder.GetJiraConfig();
+                if (config != null)
                 {
-                    url = folder.GetPropertyValue(Global.JiraDefectURL);
+                    url = config.baseURL;
                     break;
                 }
             }
@@ -276,12 +327,9 @@ namespace JiraSync
                 if (obj is TCFolder)
                 {
                     TCFolder f = (TCFolder)obj;
-                    
-                    return (f.PossibleContent.Contains("Issue") 
-                        && !string.IsNullOrEmpty(f.GetAttributeValue(Global.JiraDefectURL)));
+                    return (f.PossibleContent.Contains("Issue"));
                 }
-
-                return (obj is Issue);
+                return false;
             }
             catch
             {
@@ -298,7 +346,15 @@ namespace JiraSync
             IEnumerable<Issue> childIssues = f.Items.Cast<Issue>();
             String username = taskContext.GetStringValue("Jira Username", false);
             String password = taskContext.GetStringValue("Jira Password", true);
-            var jira = new JiraService.Jira(f.GetAttributeValue(Global.JiraDefectURL), username, password);
+            var config = f.GetJiraConfig();
+            if (config == null)
+            {
+                string url = taskContext.GetStringValue("Jira Instance URL: ", false);
+                string project = taskContext.GetStringValue("Jira Project Key: ", false);
+                config = new JiraConfig { baseURL = url, projectKey = project, fieldMaps = new List<FieldMap>() };
+                f.SaveConfig(config);
+            }
+            var jira = new JiraService.Jira(config.baseURL, username, password);
             var issueService = jira.GetIssueService();
             foreach (var issue in childIssues)
             {
@@ -312,7 +368,7 @@ namespace JiraSync
                 else //No existing Jira issue exists
                 {
                     string description = issue.Description;
-                    if(issue.Links.Any())
+                    if (issue.Links.Any())
                     {
                         var executionLog = issue.Links.First().ExecutionTestCaseLog;
                         description = $"TEST: {executionLog.Name}\r\n{executionLog.AggregatedDescription}";
@@ -324,15 +380,15 @@ namespace JiraSync
                             summary = issue.Name,
                             description = description,
                             //Create other fields here
-                            project = new JiraService.Issue.Field.ProjectField { key = f.GetAttributeValue(Global.JiraDefectProject) },
-                            issuetype = new JiraService.Issue.Field.IssueTypeField { name="Bug"}
+                            project = new JiraService.Issue.Field.ProjectField { key = config.projectKey },
+                            issuetype = new JiraService.Issue.Field.IssueTypeField { name = "Bug" }
                         }
                     }).Result;
                     createdIssue = issueService.GetAsync(createdIssue.key).Result; //The created issue only contains a shell, no fields
                     issue.SetAttibuteValue(Global.JiraDefectKey, createdIssue.key);
                     issue.State = createdIssue.fields.status.name;
                 }
-                
+
             }
             return objectToExecuteOn;
         }

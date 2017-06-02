@@ -1,5 +1,8 @@
-﻿using System;
+﻿using JiraSync.Configuration;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -129,6 +132,34 @@ namespace JiraSync
 
                 return req;
             }
+        }
+    }
+
+    public static class Helpers
+    {
+        public static JiraConfig GetJiraConfig(this OwnedItem item)
+        {
+            if (!item.AttachedFiles.Any(f => f.Name == Global.JiraConfigAttachmentName))
+                return null;
+            OwnedFile file = item.AttachedFiles.First(x => x.Name == Global.JiraConfigAttachmentName);
+            string fileContent = Encoding.Default.GetString(file.EmbeddedContent.Data);
+            return JsonConvert.DeserializeObject<JiraConfig>(fileContent);
+        }
+
+        public static void SaveConfig(this OwnedItem item, JiraConfig config)
+        {
+            string fileContent = JsonConvert.SerializeObject(config, Formatting.Indented, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            if (item.AttachedFiles.Any(f => f.Name == Global.JiraConfigAttachmentName))
+            {
+                var previousConfig = item.AttachedFiles.First(f => f.Name == Global.JiraConfigAttachmentName);
+                previousConfig.Delete(MsgBoxResult_OkCancel.Ok, MsgBoxResult_YesNo.Yes);
+            }
+            string tempFilePath = Global.JiraConfigAttachmentName;
+            File.WriteAllText(tempFilePath, fileContent);
+            item.AttachFile(tempFilePath, "Embedded");
         }
     }
 }

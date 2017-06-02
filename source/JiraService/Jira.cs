@@ -16,12 +16,15 @@ namespace JiraService
 
         public Jira(string baseURL, string username, string password)
         {
+#if !DEVELOPMENT
             HttpClient client = new HttpClient();
             client.BaseAddress = new Uri(baseURL);
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password)));
             this.client = client;
+#endif
             serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MissingMemberHandling = MissingMemberHandling.Ignore };
+            serializerSettings.Converters.Add(new Issue.IssueConverter());
         }
 
         public Issue.IssueService GetIssueService()
