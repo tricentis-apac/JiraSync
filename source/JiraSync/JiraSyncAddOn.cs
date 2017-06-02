@@ -36,15 +36,8 @@ namespace JiraSync
             ToscaHelpers.CreateCustomProperties("Requirement", Global.JiraLastSyncedAttributeName);
             ToscaHelpers.CreateCustomProperties("Requirement", Global.JiraSyncStateAttributeName);
 
-            ToscaHelpers.CreateCustomProperties("RequirementSet", Global.JiraBaseURL);
-            ToscaHelpers.CreateCustomProperties("RequirementSet", Global.JiraBaseJQL);
-
             ToscaHelpers.CreateIssuesProperties("Issue", Global.JiraDefectID);
             ToscaHelpers.CreateIssuesProperties("Issue", Global.JiraDefectKey);
-
-            ToscaHelpers.CreateIssuesProperties("Folder", Global.JiraDefectURL);
-            ToscaHelpers.CreateIssuesProperties("Folder", Global.JiraBaseJQL);
-            ToscaHelpers.CreateIssuesProperties("Folder", Global.JiraDefectProject);
 
             return null;
         }
@@ -93,7 +86,11 @@ namespace JiraSync
             {
                 string url = taskContext.GetStringValue("Jira Instance URL: ", false);
                 string jqlValue = taskContext.GetStringValue("JQL Filter for requirements: ", false);
-                config = new JiraConfig { baseURL = url, jqlFilter = jqlValue, fieldMaps = new List<FieldMap>()
+                config = new JiraConfig
+                {
+                    baseURL = url,
+                    jqlFilter = jqlValue,
+                    fieldMaps = new List<FieldMap>()
                 {
                     new FieldMap {direction = Direction.jira_to_tosca, jiraJsonPath="$.fields.summary", toscaField="Name" }
                 }
@@ -129,7 +126,7 @@ namespace JiraSync
                 {
                     CreateOrUpdateRequirement(rs, config, issue);
                 }
-                
+
                 // Prompt status
                 taskContext.ShowMessageBox("Jira Sync", issues.Length.ToString() + " requirements have been synchronised.");
             }
@@ -145,10 +142,18 @@ namespace JiraSync
             if (issue.fields.parent != null)
             {
                 Requirement parent = FindRequirementForIssue(rs, issue.fields.parent.key);
-                if(parent != null)
+                if (parent != null)
                     parent.Move(req);
             }
-            req.SetAttibuteValue(Global.JiraTicketAttributeName, issue.key);
+            try
+            {
+                req.SetAttibuteValue(Global.JiraTicketAttributeName, issue.key);
+            }
+            catch (Exception)
+            {
+
+                throw new Exception("Please prepare project for integration (available from context menu at project level) and then try again");
+            }
             //req.SetAttibuteValue(Global.JiraDefectID, issue.id);
             foreach (var fieldMap in config.fieldMaps)
             {
@@ -261,7 +266,16 @@ namespace JiraSync
             var issueService = jira.GetIssueService();
             foreach (var issue in childIssues)
             {
-                string storedIssueKey = issue.GetAttributeValue(Global.JiraDefectKey);
+
+                string storedIssueKey = string.Empty;
+                try
+                {
+                    storedIssueKey = issue.GetAttributeValue(Global.JiraDefectKey);
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Please prepare project for integration (available from context menu at project level) and then try again");
+                }
                 if (!string.IsNullOrEmpty(storedIssueKey))
                 {
                     var jiraIssue = issueService.GetAsync(storedIssueKey).Result;
