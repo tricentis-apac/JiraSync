@@ -112,7 +112,7 @@ namespace JiraSync
                     System.Threading.Thread.Sleep(100);
                 }
                 //order the issues so that subtasks are not created before parent tasks
-                issues = issueTask.Result.OrderBy(x => x.id).ToArray();
+                issues = issueTask.Result.OrderBy(x => x.fields.project.name).ThenBy(x=>x.id).ToArray();
                 taskContext.ShowStatusInfo("Creating Requirements");
             }
             catch (Exception e)
@@ -157,7 +157,7 @@ namespace JiraSync
             //req.SetAttibuteValue(Global.JiraDefectID, issue.id);
             foreach (var fieldMap in config.fieldMaps)
             {
-                string jiraValue = issue.fields.GetValueByPath(fieldMap.jiraJsonPath);
+                string jiraValue = issue.GetValueByPath(fieldMap.jiraJsonPath);
                 try
                 {
                     req.SetAttibuteValue(fieldMap.toscaField, jiraValue);
@@ -249,9 +249,8 @@ namespace JiraSync
 
         public override TCObject Execute(TCObject objectToExecuteOn, TCAddOnTaskContext taskContext)
         {
-
             TCFolder f = (TCFolder)objectToExecuteOn;
-            IEnumerable<Issue> childIssues = f.Items.Cast<Issue>();
+            IEnumerable<Issue> childIssues = f.Search("->SUBPARTS:Issue").Cast<Issue>();
             String username = taskContext.GetStringValue("Jira Username", false);
             String password = taskContext.GetStringValue("Jira Password", true);
             var config = f.GetJiraConfig();
@@ -290,7 +289,7 @@ namespace JiraSync
                         var executionLog = issue.Links.First().ExecutionTestCaseLog;
                         description = $"TEST: {executionLog.Name}\r\n{executionLog.AggregatedDescription}";
                     }
-                    JiraService.Issue.Issue createdIssue = issueService.CreateAsync(new JiraService.Issue.Issue
+                    var newIssue = new JiraService.Issue.Issue
                     {
                         fields = new JiraService.Issue.IssueFields
                         {
@@ -300,7 +299,12 @@ namespace JiraSync
                             project = new JiraService.Issue.Field.ProjectField { key = config.projectKey },
                             issuetype = new JiraService.Issue.Field.IssueTypeField { name = "Bug" }
                         }
-                    }).Result;
+                    };
+                    foreach (var defaultValue in config.defaultValues)
+                    {
+                        newIssue.SetValueByPath(defaultValue.jiraJsonPath, defaultValue.defaultValue);
+                    }
+                    JiraService.Issue.Issue createdIssue = issueService.CreateAsync(newIssue).Result;
                     createdIssue = issueService.GetAsync(createdIssue.key).Result; //The created issue only contains a shell, no fields
                     issue.SetAttibuteValue(Global.JiraDefectKey, createdIssue.key);
                     issue.State = createdIssue.fields.status.name;

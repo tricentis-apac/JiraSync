@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace JiraSync.Configuration
 {
-    public class FieldMap
+    public class FieldDefault
     {
         public string jiraJsonPath { get; set; }
-        public string toscaField { get; set; }
-        public Direction direction { get; set; }
-    }
-    public enum Direction
-    {
-        jira_to_tosca = 0,
-        bidirectional = 1
+        public string defaultValue { get; set; }
     }
 }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraService", "JiraService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jira.Mock", "Jira.Mock\Jira.Mock.csproj", "{952967D2-C973-480A-8477-2F46ACDE2C3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JiraSync.Tests", "JiraSync.Tests\JiraSync.Tests.csproj", "{96DD3425-73A6-4296-95B5-B583273E32DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +36,12 @@ Global
 		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Development|Any CPU.Build.0 = DEV|Any CPU
 		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{952967D2-C973-480A-8477-2F46ACDE2C3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96DD3425-73A6-4296-95B5-B583273E32DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DD3425-73A6-4296-95B5-B583273E32DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96DD3425-73A6-4296-95B5-B583273E32DC}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DD3425-73A6-4296-95B5-B583273E32DC}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{96DD3425-73A6-4296-95B5-B583273E32DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96DD3425-73A6-4296-95B5-B583273E32DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

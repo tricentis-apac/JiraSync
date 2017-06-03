@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\FieldDefault.cs" />
     <Compile Include="Configuration\FieldMap.cs" />
     <Compile Include="Configuration\JiraConfig.cs" />
     <Compile Include="Global.cs" />

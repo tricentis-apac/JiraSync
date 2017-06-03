@@ -22,7 +22,7 @@ namespace JiraService.Issue
             JObject obj = JObject.Load(reader);
             string jSonrepresentation = obj.ToString();
             Issue issue = JsonConvert.DeserializeObject<Issue>(jSonrepresentation);
-            issue.fields.SetIssueFields(obj);
+            issue.SetIssueFields(obj);
             return issue;
         }
 
@@ -30,13 +30,14 @@ namespace JiraService.Issue
         {
             get
             {
-                return false;
+                return true;
             }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException("This converter is not intended for writing... yet");
+            Issue issue = (Issue)value;
+            writer.WriteRaw(issue.SerializeObject(new JsonSerializerSettings { NullValueHandling = serializer.NullValueHandling }));
         }
     }
 }
