@@ -32,12 +32,11 @@ namespace JiraSync
         {
             // Create custom properties on Requirements and RequirementSets.
             // This is to be used to search when updating or knowing which ones have been created by this addon.
-            ToscaHelpers.CreateCustomProperties("Requirement", Global.JiraTicketAttributeName);
+            ToscaHelpers.CreateCustomProperties("Requirement", Global.JiraTicket);
             ToscaHelpers.CreateCustomProperties("Requirement", Global.JiraLastSyncedAttributeName);
             ToscaHelpers.CreateCustomProperties("Requirement", Global.JiraSyncStateAttributeName);
 
-            ToscaHelpers.CreateIssuesProperties("Issue", Global.JiraDefectID);
-            ToscaHelpers.CreateIssuesProperties("Issue", Global.JiraDefectKey);
+            ToscaHelpers.CreateIssuesProperties("Issue", Global.JiraTicket);
 
             return null;
         }
@@ -130,7 +129,7 @@ namespace JiraSync
             }
             try
             {
-                req.SetAttibuteValue(Global.JiraTicketAttributeName, issue.key);
+                req.SetAttibuteValue(Global.JiraTicket, issue.key);
             }
             catch (Exception)
             {
@@ -156,7 +155,7 @@ namespace JiraSync
 
         private Requirement FindRequirementForIssue(RequirementSet rs, string issueKey)
         {
-            Requirement req = rs.Search($"=>SUBPARTS:Requirement[{Global.JiraTicketAttributeName}==\"{issueKey}\"]").FirstOrDefault() as Requirement;
+            Requirement req = rs.Search($"=>SUBPARTS:Requirement[{Global.JiraTicket}==\"{issueKey}\"]").FirstOrDefault() as Requirement;
             return req;
         }
     }
@@ -211,7 +210,7 @@ namespace JiraSync
                 string storedIssueKey = string.Empty;
                 try
                 {
-                    storedIssueKey = issue.GetAttributeValue(Global.JiraDefectKey);
+                    storedIssueKey = issue.GetAttributeValue(Global.JiraTicket);
                 }
                 catch (Exception)
                 {
@@ -248,7 +247,7 @@ namespace JiraSync
                     }
                     JiraService.Issue.Issue createdIssue = issueService.CreateAsync(newIssue).Result;
                     createdIssue = issueService.GetAsync(createdIssue.key).Result; //The created issue only contains a shell, no fields
-                    issue.SetAttibuteValue(Global.JiraDefectKey, createdIssue.key);
+                    issue.SetAttibuteValue(Global.JiraTicket, createdIssue.key);
                     issue.State = createdIssue.fields.status.name;
                 }
 

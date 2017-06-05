@@ -87,7 +87,7 @@ namespace JiraSync
         {
             public static Requirement FindRequirementByJiraProperty(TCObject obj, string jiraTicketNumber)
             {
-                TCObject o = obj.Search("=>SUBPARTS:Requirement[" + Global.JiraTicketAttributeName + "==\"" + jiraTicketNumber + "\"]").FirstOrDefault();
+                TCObject o = obj.Search("=>SUBPARTS:Requirement[" + Global.JiraTicket + "==\"" + jiraTicketNumber + "\"]").FirstOrDefault();
 
                 if (o == null)
                     return null;
