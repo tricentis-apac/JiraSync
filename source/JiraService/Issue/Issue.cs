@@ -30,7 +30,7 @@ namespace JiraService.Issue
             }
             catch (Exception)
             {
-                throw;
+                return null;
             }
         }
         public void SetValueByPath(string jsonPath, string value)
@@ -47,6 +47,8 @@ namespace JiraService.Issue
         {
             string thisObjectAsJson = JsonConvert.SerializeObject(this,settings);
             JObject jObj = JObject.Parse(thisObjectAsJson);
+            if (_modifications == null)
+                _modifications = new Dictionary<string, string>();
             foreach (var modifier in _modifications)
             {
                 //Look forwards until we get to the nearest JToken

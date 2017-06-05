@@ -16,6 +16,7 @@ namespace JiraSync.Configuration
         public string baseURL { get; set; }
         public string jqlFilter { get; set; }
         public string projectKey { get; set; }
+        public string parentLocatorPropertyOverride { get; set; }
         public List<FieldMap> fieldMaps { get; set; }
         public List<FieldDefault> defaultValues { get; set; }
     }

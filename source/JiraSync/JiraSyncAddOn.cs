@@ -139,9 +139,16 @@ namespace JiraSync
             if (req == null)
                 req = rs.CreateRequirement();
             //Move requirement to parent
-            if (issue.fields.parent != null)
+            string parentKey = (issue.fields.parent == null? null : issue.fields.parent.key);
+            if(config.parentLocatorPropertyOverride != null)
             {
-                Requirement parent = FindRequirementForIssue(rs, issue.fields.parent.key);
+                string parentKeyOverride = issue.GetValueByPath(config.parentLocatorPropertyOverride);
+                if (parentKeyOverride != null)
+                    parentKey = parentKeyOverride;
+            }
+            if (parentKey != null)
+            {
+                Requirement parent = FindRequirementForIssue(rs, parentKey);
                 if (parent != null)
                     parent.Move(req);
             }
