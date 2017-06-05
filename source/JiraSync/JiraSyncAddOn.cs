@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tricentis.TCAddOns;
 using Tricentis.TCAPIObjects.Objects;
+using Tricentis.TCCore.CredentialManager;
 using static JiraSync.JiraHelpers;
 
 namespace JiraSync
@@ -53,8 +54,6 @@ namespace JiraSync
 
         public override TCObject Execute(TCObject requirementSet, TCAddOnTaskContext taskContext)
         {
-            String username = taskContext.GetStringValue("Jira Username", false);
-            String password = taskContext.GetStringValue("Jira Password", true);
             RequirementSet rs = (RequirementSet)requirementSet;
             JiraConfig config = rs.GetJiraConfig();
             if (config == null)
@@ -71,6 +70,25 @@ namespace JiraSync
                 }
                 };
                 rs.SaveConfig(config);
+            }
+            string username, password;
+            if (CredentialManager.Instance.Credentials.Any(x => x.BaseURL == config.baseURL))
+            {
+                Credential credential = CredentialManager.Instance.Credentials.First(x => x.BaseURL == config.baseURL);
+                username = credential.Username;
+                password = credential.Password;
+            }
+            else
+            {
+                username = taskContext.GetStringValue("Jira Username", false);
+                password = taskContext.GetStringValue("Jira Password", true);
+                CredentialManager.Instance.StoreOrUpdateCredential(new Credential
+                {
+                    BaseURL = config.baseURL,
+                    Description = "Created by Jira Config",
+                    Username = username,
+                    Password = password
+                });
             }
             var jira = new JiraService.Jira(config.baseURL, username, password);
             var issueService = jira.GetIssueService();
@@ -192,8 +210,7 @@ namespace JiraSync
         {
             TCFolder f = (TCFolder)objectToExecuteOn;
             IEnumerable<Issue> childIssues = f.Search("->SUBPARTS:Issue").Cast<Issue>();
-            String username = taskContext.GetStringValue("Jira Username", false);
-            String password = taskContext.GetStringValue("Jira Password", true);
+
             var config = f.GetJiraConfig();
             if (config == null)
             {
@@ -202,6 +219,26 @@ namespace JiraSync
                 config = new JiraConfig { baseURL = url, projectKey = project, fieldMaps = new List<FieldMap>() };
                 f.SaveConfig(config);
             }
+            string username, password;
+            if (CredentialManager.Instance.Credentials.Any(x => x.BaseURL == config.baseURL))
+            {
+                Credential credential = CredentialManager.Instance.Credentials.First(x => x.BaseURL == config.baseURL);
+                username = credential.Username;
+                password = credential.Password;
+            }
+            else
+            {
+                username = taskContext.GetStringValue("Jira Username", false);
+                password = taskContext.GetStringValue("Jira Password", true);
+                CredentialManager.Instance.StoreOrUpdateCredential(new Credential
+                {
+                    BaseURL = config.baseURL,
+                    Description = "Created by Jira Config",
+                    Username = username,
+                    Password = password
+                });
+            }
+
             var jira = new JiraService.Jira(config.baseURL, username, password);
             var issueService = jira.GetIssueService();
             foreach (var issue in childIssues)
