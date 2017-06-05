@@ -36,4 +36,4 @@ using Tricentis.TCAddOns;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 
-[assembly: TCAddOnType(typeof(JiraSync.JiraSyncAddOn))]
+[assembly: TCAddOnType(typeof(JiraSync.Addins.JiraSyncSetupAddOn))]

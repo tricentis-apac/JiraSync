@@ -66,13 +66,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addins\RefreshDefects.cs" />
+    <Compile Include="Addins\UpdateRequirements.cs" />
+    <Compile Include="Addins\JiraSyncSetup.cs" />
     <Compile Include="Configuration\FieldDefault.cs" />
     <Compile Include="Configuration\FieldMap.cs" />
     <Compile Include="Configuration\JiraConfig.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="JiraFields.cs" />
-    <Compile Include="JiraHelpers.cs" />
-    <Compile Include="JiraSyncAddOn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToscaHelpers.cs" />
   </ItemGroup>
