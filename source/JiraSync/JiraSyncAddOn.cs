@@ -43,31 +43,7 @@ namespace JiraSync
         }
     }
 
-    public class JiraSyncRequirementSetSetup : TCAddOnTask
-    {
-        public override string Name => "Configure for Jira Sync";
-
-        public override Type ApplicableType => typeof(RequirementSet);
-
-        public override bool RequiresChangeRights => true;
-
-        public override TCObject Execute(TCObject objectToExecuteOn, TCAddOnTaskContext taskContext)
-        {
-            String baseURL = taskContext.GetStringValue("Base Jira URL", false);
-            String jql = taskContext.GetStringValue("Enter JQL", false);
-
-            // Provide default values as hints when left empty
-            if (baseURL == "")
-                baseURL = "https://subdomain.atlassian.net/rest/api/2/search";
-
-
-            objectToExecuteOn.SetAttibuteValue(Global.JiraBaseURL, baseURL);
-            objectToExecuteOn.SetAttibuteValue(Global.JiraBaseJQL, jql);
-
-            return null;
-        }
-    }
-
+    
     public class JiraRequirements : TCAddOnTask
     {
         public override string Name => "Update Requirements";
@@ -183,47 +159,6 @@ namespace JiraSync
             Requirement req = rs.Search($"=>SUBPARTS:Requirement[{Global.JiraTicketAttributeName}==\"{issueKey}\"]").FirstOrDefault() as Requirement;
             return req;
         }
-    }
-
-    public class JiraSubmitDefect : TCAddOnTask
-    {
-        public override string Name => "Submit Defect";
-
-        public override Type ApplicableType => typeof(Issue);
-
-        public override bool RequiresChangeRights => true;
-
-        public override TCObject Execute(TCObject objectToExecuteOn, TCAddOnTaskContext taskContext)
-        {
-            String username = taskContext.GetStringValue("Jira Username", false);
-            String password = taskContext.GetStringValue("Jira Password", true);
-
-            #region Get URL
-
-            String url = "";
-            List<TCFolder> folders = objectToExecuteOn.Search("=>SUPERPART:TCFolder").Cast<TCFolder>().ToList();
-            foreach (TCFolder folder in folders.OrderByDescending(f => f.NodePath))
-            {
-                var config = folder.GetJiraConfig();
-                if (config != null)
-                {
-                    url = config.baseURL;
-                    break;
-                }
-            }
-            // String url = "https://subdomain.atlassian.net/rest/api/2/issue/";
-
-            #endregion
-
-            //JiraDefect jd = CreateIssue(username, password, url, "Tosca Project", "Tosca Summary", "Tosca description", "Bug");
-
-            //objectToExecuteOn.SetAttibuteValue(Global.JiraDefectID, jd.ID);
-            //objectToExecuteOn.SetAttibuteValue(Global.JiraDefectKey, jd.Key);
-            //objectToExecuteOn.SetAttibuteValue(Global.JiraDefectURL, jd.URL);
-
-            return null;
-        }
-
     }
 
     /// <summary>
