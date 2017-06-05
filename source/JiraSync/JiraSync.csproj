@@ -66,13 +66,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addins\RefreshDefects.cs" />
+    <Compile Include="Addins\UpdateRequirements.cs" />
+    <Compile Include="Addins\JiraSyncSetup.cs" />
     <Compile Include="Configuration\FieldDefault.cs" />
     <Compile Include="Configuration\FieldMap.cs" />
     <Compile Include="Configuration\JiraConfig.cs" />
     <Compile Include="Global.cs" />
-    <Compile Include="JiraFields.cs" />
-    <Compile Include="JiraHelpers.cs" />
-    <Compile Include="JiraSyncAddOn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ToscaHelpers.cs" />
   </ItemGroup>
@@ -83,6 +83,10 @@
     <ProjectReference Include="..\JiraService\JiraService.csproj">
       <Project>{c94f0ea5-022d-45b8-862c-a9e9784fd2a3}</Project>
       <Name>JiraService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tricentis.TCCore.CredentialManager\Tricentis.TCCore.CredentialManager.csproj">
+      <Project>{29facc77-91fd-49ae-96bb-4fb963bbad46}</Project>
+      <Name>Tricentis.TCCore.CredentialManager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

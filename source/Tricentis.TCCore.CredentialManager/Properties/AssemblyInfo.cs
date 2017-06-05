@@ -1,16 +1,16 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Tricentis.TCAddOns;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("JiraSync")]
+[assembly: AssemblyTitle("Tricentis.TCCore.CredentialManager")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("JiraSync")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyProduct("Tricentis.TCCore.CredentialManager")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using Tricentis.TCAddOns;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b09485e9-7c0e-452f-9bcb-0bf358c8edc6")]
+[assembly: Guid("29facc77-91fd-49ae-96bb-4fb963bbad46")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,6 +34,3 @@ using Tricentis.TCAddOns;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-
-[assembly: TCAddOnType(typeof(JiraSync.Addins.JiraSyncSetupAddOn))]

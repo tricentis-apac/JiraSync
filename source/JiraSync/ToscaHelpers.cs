@@ -82,57 +82,6 @@ namespace JiraSync
 
             return vf;
         }
-
-        public class RequirementHelpers
-        {
-            public static Requirement FindRequirementByJiraProperty(TCObject obj, string jiraTicketNumber)
-            {
-                TCObject o = obj.Search("=>SUBPARTS:Requirement[" + Global.JiraTicket + "==\"" + jiraTicketNumber + "\"]").FirstOrDefault();
-
-                if (o == null)
-                    return null;
-                else
-                    return (Requirement)o;
-            }
-
-            public static Requirement CreateRequirement(RequirementSet parent, String title, Dictionary<String, String> properties)
-            {
-                Requirement req = parent.CreateRequirement();
-                req.Name = title;
-
-                foreach (KeyValuePair<String, String> prop in properties)
-                {
-                    req.SetAttibuteValue(prop.Key, prop.Value);
-                }
-
-                return req;
-            }
-
-            public static Requirement CreateRequirement(Requirement parent, String title, Dictionary<String, String> properties)
-            {
-                Requirement req = parent.CreateRequirement();
-                req.Name = title;
-
-                foreach (KeyValuePair<String, String> prop in properties)
-                {
-                    req.SetAttibuteValue(prop.Key, prop.Value);
-                }
-
-                return req;
-            }
-
-            public static Requirement UpdateRequirement(Requirement req, String title, Dictionary<String, String> properties)
-            {
-                req.Name = title;
-
-                foreach (KeyValuePair<String, String> prop in properties)
-                {
-                    req.SetAttibuteValue(prop.Key, prop.Value);
-                }
-
-                return req;
-            }
-        }
     }
 
     public static class Helpers
