@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addins\UpdateCredentials.cs" />
     <Compile Include="Addins\RefreshDefects.cs" />
     <Compile Include="Addins\UpdateRequirements.cs" />
     <Compile Include="Addins\JiraSyncSetup.cs" />
