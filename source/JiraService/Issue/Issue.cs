@@ -98,5 +98,6 @@ namespace JiraService.Issue
         public int? id { get; set; }
         public IssueFields fields { get; set; }
 
+        public JObject InternalObject { get { return _jsonRepresentation; } }
     }
 }

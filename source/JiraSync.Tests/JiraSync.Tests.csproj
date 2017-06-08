@@ -37,7 +37,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=9.0.1.18802, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -64,6 +67,13 @@
       <Project>{c94f0ea5-022d-45b8-862c-a9e9784fd2a3}</Project>
       <Name>JiraService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\JiraSync.ConfigEditor\JiraSync.ConfigEditor.csproj">
+      <Project>{1e9d04b1-a50a-4c6c-bc6a-b728c185d816}</Project>
+      <Name>JiraSync.ConfigEditor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI Tests\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

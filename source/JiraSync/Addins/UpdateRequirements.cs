@@ -1,4 +1,4 @@
-﻿using JiraSync.Configuration;
+﻿using JiraService.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
