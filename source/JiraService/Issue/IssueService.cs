@@ -34,6 +34,20 @@ namespace JiraService.Issue
             return results.issues;
         }
 
+        public Issue[] Search(string jql)
+        {
+
+
+#if DEVELOPMENT
+            string responseContent = new MockJiraService().GetIssues();
+#else
+            var result = client.GetAsync($"/rest/api/latest/search?jql={jql}").Result;
+            string responseContent = result.Content.ReadAsStringAsync().Result;
+#endif
+            SearchResults results = JsonConvert.DeserializeObject<SearchResults>(responseContent, serializerSettings);
+            return results.issues;
+        }
+
         public async Task<Issue> GetAsync(string key)
         {
 #if DEVELOPMENT

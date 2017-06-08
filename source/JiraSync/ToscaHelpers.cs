@@ -1,4 +1,4 @@
-﻿using JiraSync.Configuration;
+﻿using JiraService.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,6 +14,29 @@ namespace JiraSync
 {
     public class ToscaHelpers
     {
+        public static string[] GetPropertyNames(string type)
+        {
+            TCProject proj = TCAddOn.ActiveWorkspace.GetTCProject();
+            TCObjectPropertiesDefinition propDef = proj.ObjectPropertiesDefinitions.FirstOrDefault(pd => pd.Name.ToLower() == type.ToLower());
+            List<string> properties = new List<string>();
+            if(propDef is Tricentis.TCAPIObjects.Objects.RequirementTypeDefinition)
+            {
+                var reqType = typeof(Requirement);
+                properties.AddRange(GetAvailablePropertiesForType(reqType));
+            }
+            else if(type=="Issue")
+            {
+                var issType = typeof(Issue);
+                properties.AddRange(GetAvailablePropertiesForType(issType));
+            }
+            properties.AddRange(propDef.GetPropertyNames());
+            return properties.ToArray();
+        }
+
+        private static string[] GetAvailablePropertiesForType(Type type)
+        {
+            return type.GetProperties().Where(x => x.CanWrite && (!x.MemberType.GetType().IsClass || x.MemberType.GetType().IsPrimitive)).Select(x => x.Name).ToArray();
+        }
         public static TCObjectPropertiesDefinition CreateCustomProperties(String objectToCreateOn, String propertyName)
         {
             TCProject proj = TCAddOn.ActiveWorkspace.GetTCProject();
@@ -106,7 +129,7 @@ namespace JiraSync
                 var previousConfig = item.AttachedFiles.First(f => f.Name == Global.JiraConfigAttachmentName);
                 previousConfig.Delete(MsgBoxResult_OkCancel.Ok, MsgBoxResult_YesNo.Yes);
             }
-            string tempFilePath = Global.JiraConfigAttachmentName;
+            string tempFilePath = Environment.ExpandEnvironmentVariables($"%tricentis_projects%\\{Global.JiraConfigAttachmentName}");
             File.WriteAllText(tempFilePath, fileContent);
             item.AttachFile(tempFilePath, "Embedded");
         }

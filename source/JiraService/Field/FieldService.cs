@@ -27,5 +27,15 @@ namespace JiraService.Field
             return results;
 
         }
+
+
+        public Field[] GetFields()
+        {
+            var result = client.GetAsync($"/rest/api/latest/field").Result;
+            string responseContent = result.Content.ReadAsStringAsync().Result;
+            Field[] results = JsonConvert.DeserializeObject<Field[]>(responseContent, serializerSettings);
+            return results;
+
+        }
     }
 }
