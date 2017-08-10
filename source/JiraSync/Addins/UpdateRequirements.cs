@@ -34,7 +34,7 @@ namespace JiraSync.Addins
                     jqlFilter = jqlValue,
                     fieldMaps = new List<FieldMap>()
                 {
-                    new FieldMap {direction = Direction.jira_to_tosca, jiraJsonPath="$.fields.summary", toscaField="Name" }
+                    new FieldMap {direction = JiraService.Configuration.Direction.jira_to_tosca, jiraJsonPath="$.fields.summary", toscaField="Name" }
                 }
                 };
                 rs.SaveConfig(config);
@@ -94,7 +94,6 @@ namespace JiraSync.Addins
                 // Prompt status
                 taskContext.ShowMessageBox("Jira Sync", issues.Length.ToString() + " requirements have been synchronised.");
             }
-            var 
             return null;
         }
 
