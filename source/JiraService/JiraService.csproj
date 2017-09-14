@@ -56,6 +56,8 @@
     <Compile Include="Configuration\FieldDefault.cs" />
     <Compile Include="Configuration\FieldMap.cs" />
     <Compile Include="Configuration\JiraConfig.cs" />
+    <Compile Include="Configuration\TestSyncDefinition.cs" />
+    <Compile Include="Configuration\ValueMap.cs" />
     <Compile Include="Field\Field.cs" />
     <Compile Include="Field\FieldService.cs" />
     <Compile Include="Issue\Field\IssueLink.cs" />
