@@ -100,12 +100,21 @@ namespace JiraSync.Addins
                             string executionTable = null;
                             foreach (ExecutionXTestStepLog logEntry in executionLog.ExecutionSubLogs)
                             {
-                                string stepDesc = logEntry.AggregatedDescription.Replace('{', ' ').Replace('}', ' ').Replace('|', ' ').Trim();
+                                string stepDesc = logEntry.AggregatedDescription;
                                 
                                 if(logEntry.TestStepValueLogsInRightOrder.Count() > 0)
                                 {
-
+                                    stepDesc = null;
+                                    foreach (var stepVal in logEntry.TestStepValueLogsInRightOrder)
+                                    {
+                                        string act = $"{(stepVal.Result == ExecutionResult.Passed ? "(/)" : "(x)")} - {stepVal.DisplayedName} - {stepVal.LogInfo}";
+                                        if (stepDesc == null)
+                                            stepDesc = act;
+                                        else
+                                            stepDesc = stepDesc + "\r\n" + act;
+                                    }
                                 }
+                                stepDesc = stepDesc.Replace('{', ' ').Replace('}', ' ').Replace('|', ' ').Trim();
                                 string entry = $"|{logEntry.DisplayedName} |{(logEntry.Result == ExecutionResult.Passed ? "{color:#14892c}" : "{color:#d04437}") + logEntry.Result + "{color}"} |{stepDesc}|{Math.Round(logEntry.Duration / 1000,2)}s|";
                                 if (executionTable == null)
                                     executionTable = entry;
