@@ -44,6 +44,8 @@ namespace JiraService.Issue
             var result = client.GetAsync($"/rest/api/latest/search?jql={jql}").Result;
             string responseContent = result.Content.ReadAsStringAsync().Result;
 #endif
+            if (!result.IsSuccessStatusCode)
+                throw new InvalidOperationException($"Error fetching content. Error code: {result.StatusCode}, Reason: {result.ReasonPhrase}");
             SearchResults results = JsonConvert.DeserializeObject<SearchResults>(responseContent, serializerSettings);
             return results.issues;
         }
@@ -55,6 +57,9 @@ namespace JiraService.Issue
 #else
             var result = await client.GetAsync($"/rest/api/latest/issue/{key}");
             string responseContent = result.Content.ReadAsStringAsync().Result;
+
+            if (!result.IsSuccessStatusCode)
+                throw new InvalidOperationException($"Error fetching content. Error code: {result.StatusCode}, Reason: {result.ReasonPhrase}");
 #endif
             Issue results = JsonConvert.DeserializeObject<Issue>(responseContent, serializerSettings);
             //JsonConvert.DeserializeObject(,,new JsonConverter())
@@ -73,6 +78,9 @@ namespace JiraService.Issue
             var result = await client.PutAsync($"/rest/api/latest/issue/{issue.key}",content);
             if (result.StatusCode == System.Net.HttpStatusCode.NoContent)
                 return true;
+
+            if (!result.IsSuccessStatusCode)
+                throw new InvalidOperationException($"Error fetching content. Error code: {result.StatusCode}, Reason: {result.ReasonPhrase}");
             return false;
 #endif
 
@@ -87,8 +95,11 @@ namespace JiraService.Issue
             var result = await client.PostAsync($"/rest/api/latest/issue", content);
             string responseContent = result.Content.ReadAsStringAsync().Result;
 
+            if (!result.IsSuccessStatusCode)
+                throw new InvalidOperationException($"Error fetching content. Error code: {result.StatusCode}, Reason: {result.ReasonPhrase}");
 #endif
             Issue results = JsonConvert.DeserializeObject<Issue>(responseContent, serializerSettings);
+
             return results;
         }
     }

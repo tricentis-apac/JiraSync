@@ -80,7 +80,12 @@ namespace JiraSync.Addins
             }
             catch (Exception e)
             {
-                taskContext.ShowStatusInfo($"Error synchronising: {e.Message}");
+                string err = e.Message;
+                if (e.InnerException != null)
+                    err += "\r\n" + e.InnerException.Message;
+                taskContext.ShowErrorMessage($"Error synchronising", err);
+                taskContext.ShowStatusInfo($"Error synchronising: {err}");
+                return requirementSet;
             }
             HashSet<string> updatedItems = new HashSet<string>();
             if (issues != null)
