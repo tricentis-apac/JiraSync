@@ -93,8 +93,32 @@ namespace JiraSync.Addins
                     string description = issue.Description;
                     if (issue.Links.Any())
                     {
-                        var executionLog = issue.Links.First().ExecutionTestCaseLog;
-                        description = $"TEST: {executionLog.Name}\r\n{executionLog.AggregatedDescription}";
+                        try
+                        {
+                            var executionLog = issue.Links.First().ExecutionTestCaseLog;
+                            string executionTableHeader = $"||Step||Result||Description||Duration(sec)";
+                            string executionTable = null;
+                            foreach (ExecutionXTestStepLog logEntry in executionLog.ExecutionSubLogs)
+                            {
+                                string stepDesc = logEntry.AggregatedDescription.Replace('{', ' ').Replace('}', ' ').Replace('|', ' ').Trim();
+                                
+                                if(logEntry.TestStepValueLogsInRightOrder.Count() > 0)
+                                {
+
+                                }
+                                string entry = $"|{logEntry.DisplayedName} |{(logEntry.Result == ExecutionResult.Passed ? "{color:#14892c}" : "{color:#d04437}") + logEntry.Result + "{color}"} |{stepDesc}|{Math.Round(logEntry.Duration / 1000,2)}s|";
+                                if (executionTable == null)
+                                    executionTable = entry;
+                                else
+                                    executionTable += "\r\n" + entry;
+                            }
+                            description = $"*TEST*: {executionLog.Name}\r\n*Description*:\r\n{executionTableHeader}\r\n{executionTable}";
+                        }
+                        catch (Exception)
+                        {
+                            description = issue.Description;
+                        }
+                        
                     }
                     var newIssue = new JiraService.Issue.Issue
                     {
